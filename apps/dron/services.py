@@ -2,6 +2,7 @@ from usecases.dron import DronUseCase, DeliveryUseCase, DronCategoryUseCase, Med
 from apps.core.services import Logger
 from django.db.models import Q
 from typing import List as list
+from helpers.constants import *
 
 class DronCategoryService(DronCategoryUseCase, Logger):
 
@@ -83,6 +84,16 @@ class DronService(DronUseCase, Logger):
         self.log('BookService:get_by_id', input_date=id)
         return data
 
+    def get_avaibles(self):
+        data = self.orm.filter(status=dronStatus.active)
+        return data
+
+    def status_change(self, id:int, status: int):
+        obj = self.orm.filter(id=id).first()
+        obj.status = status
+        obj.save()
+        return obj
+
     def get_by_ids(self, ids: list[int]):
         return self.orm.filter(id__in=ids)
 
@@ -140,6 +151,10 @@ class DeliveryService(DeliveryUseCase, Logger):
 
     def get_all(self):
         return self.orm.all()
+
+    def get_dron_ids(self):
+        list = self.orm.values_list('dron__id', flat=True)
+        return list
 
     def get_by_id(self, id: int):
         data = self.orm.filter(id=id).first()

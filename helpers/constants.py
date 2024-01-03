@@ -7,3 +7,8 @@ class States:
     RETURNING=6
 
 productStates = States()
+
+class DronStatus:
+    active = 1
+    inactive =2
+dronStatus = DronStatus

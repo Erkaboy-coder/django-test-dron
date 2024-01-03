@@ -21,6 +21,11 @@ class DronModel(models.Model):
     serial_number = models.CharField(verbose_name="serial number", max_length=100, blank=True)
     category = models.ForeignKey(DronCategoryModel, blank=True, null=True, on_delete=models.CASCADE,related_name='category')
     battery_capacity = models.IntegerField(blank=True, null=True)
+    status_choices=(
+        (1, 'Active'),
+        (2, 'Inactive'),
+        (3, ''))
+    status = models.IntegerField(choices=status_choices, default=1)
 
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)

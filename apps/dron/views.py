@@ -5,7 +5,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.db.models import Q
 from apps.core.models import FileModel
 from apps.core.services import FileService
 from usecases.core import FileUseCase
@@ -211,7 +211,6 @@ class DeliverProductStatusChangerAPI(APIView, IndexView):
         dron_id = request.data.get('dron_id')
         medication_id = request.data.get('medication_id')
         state = request.data.get('state')
-
         try:
             with transaction.atomic():
                 dron = self.dronService.get_by_id(id=dron_id)
@@ -222,8 +221,21 @@ class DeliverProductStatusChangerAPI(APIView, IndexView):
                 if not medication:
                     return Response('Medication not found', status=status.HTTP_404_NOT_FOUND)
 
+                if state == productStates.DELIVERED or state == productStates.RETURNING:
+                    self.dronService.status_change(id=dron_id,status=dronStatus.active)
+                else:
+                    self.dronService.status_change(id=dron_id, status=dronStatus.inactive)
                 deliver = self.deliveryService.change_state(dron_id=dron_id,medication_id=medication_id,state=state)
                 res_data = self.loadSerializer(deliver, many=False).data
                 return Response(data=res_data, status=status.HTTP_201_CREATED)
         except Exception as err:
             return Response(data={'message':format(str(err))}, status=400)
+
+class AvaibleDronesAPI(APIView, IndexView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        drons = self.dronService.get_avaibles()
+        res_data = self.dronsSerializer(drons, many=True).data
+        return Response(data=res_data, status=status.HTTP_201_CREATED)
+

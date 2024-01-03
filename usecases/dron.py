@@ -10,6 +10,8 @@ class DronUseCase:
     def get_by_ids(self, ids: list[int]):
         pass
 
+    def get_avaibles(self):
+        pass
     def get_by_category_id(self, category_id: int):
         pass
 
@@ -23,6 +25,9 @@ class DronUseCase:
         pass
 
     def delete(self, id: int):
+        pass
+
+    def status_change(self, id:int, status: int):
         pass
 
     def filter(self, ormData=None, search_key: str = None, serial_number: str = None, category_id: int = None,
@@ -63,6 +68,13 @@ class MedicationUseCase:
         pass
 
 class DeliveryUseCase:
+
+    def get_all(self):
+        pass
+
+    def get_dron_ids(self):
+        pass
+
     def get_by_id(self, id: str):
         pass
 
