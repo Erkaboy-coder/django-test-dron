@@ -15,7 +15,7 @@ class DronCategorySerializer(serializers.ModelSerializer):
         ]
 
 class DronsSerializer(serializers.ModelSerializer):
-
+    product = serializers.SerializerMethodField(read_only=True)
     category = DronCategorySerializer(read_only=True)
     class Meta:
         model = DronModel
@@ -24,10 +24,21 @@ class DronsSerializer(serializers.ModelSerializer):
             'uuid',
             'serial_number',
             'battery_capacity',
+            'product',
             'category',
             'updated_at',
             'created_at',
         ]
+    def get_product(self, obj):
+        try:
+            product = DeliveryModel.objects.filter(dron_id=obj.id).last()
+            obj = MedicationModel.objects.filter(id=product.medication.id).first()
+            content = MedicationsSerializer(obj, many=False).data
+            content['state'] = product.state
+            return content
+        except Exception as err:
+            return []
+
 
 class MedicationsSerializer(serializers.ModelSerializer):
 
